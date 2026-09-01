@@ -83,7 +83,7 @@
 
     .attacker-tabs {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 7px;
       margin-bottom: 12px;
     }
@@ -240,6 +240,13 @@
       transform: rotate(-24deg);
     }
 
+    .attack-arrow.backrow {
+      left: 50%;
+      bottom: 2%;
+      height: 23%;
+      transform: rotate(0deg);
+    }
+
     .start-dot {
       position: absolute;
       bottom: 10%;
@@ -255,6 +262,7 @@
     .start-dot.outside { left: 22%; }
     .start-dot.middle { left: 50%; }
     .start-dot.right { left: 78%; }
+    .start-dot.backrow { left: 50%; bottom: 1%; }
 
     .mark {
       position: absolute;
@@ -378,6 +386,7 @@
       <button class="attacker-tab active" data-attacker="outside" type="button">Outside</button>
       <button class="attacker-tab" data-attacker="middle" type="button">Middle</button>
       <button class="attacker-tab" data-attacker="right" type="button">Right Side</button>
+      <button class="attacker-tab" data-attacker="backrow" type="button">Backrow Attacks</button>
     </div>
 
     <section class="card">
@@ -452,7 +461,8 @@
       const attackerNames = {
         outside: 'Outside',
         middle: 'Middle',
-        right: 'Right Side'
+        right: 'Right Side',
+        backrow: 'Backrow Attacks'
       };
 
       let activeMode = 'hit';
@@ -461,7 +471,8 @@
       const state = {
         outside: { marks: [], notes: '' },
         middle: { marks: [], notes: '' },
-        right: { marks: [], notes: '' }
+        right: { marks: [], notes: '' },
+        backrow: { marks: [], notes: '' }
       };
 
       function setMode(mode) {
@@ -579,6 +590,10 @@
             right: {
               marks: state.right.marks,
               notes: state.right.notes
+            },
+            backrow: {
+              marks: state.backrow.marks,
+              notes: state.backrow.notes
             }
           },
           savedAt: new Date().toISOString()
@@ -589,10 +604,11 @@
         const totalMarks =
           state.outside.marks.length +
           state.middle.marks.length +
-          state.right.marks.length;
+          state.right.marks.length +
+          state.backrow.marks.length;
 
         savedMessage.textContent =
-          `Saved ${scout.opponent}: ${totalMarks} total marks across 3 attackers.`;
+          `Saved ${scout.opponent}: ${totalMarks} total marks across 4 attack views.`;
       });
 
       renderMarks();
