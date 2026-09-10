@@ -1,618 +1,506 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#111827" />
-  <title>Volleyball Scout</title>
-  <style>
-    :root {
-      --bg: #f4f5f7;
-      --card: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #d1d5db;
-      --accent: #111827;
-      --green: #22c55e;
-      --yellow: #f59e0b;
-      --red: #ef4444;
-      --court: #e7b96a;
-      --court-line: rgba(255,255,255,.94);
-      --arrow: rgba(17,24,39,.82);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Volleyball Tracker</title>
+<style>
+  :root{
+    --bg:#f4f7fb;
+    --panel:#ffffff;
+    --ink:#182230;
+    --muted:#6b7789;
+    --line:#dfe6ee;
+    --accent:#1f6feb;
+    --accent2:#0b5bd3;
+    --court:#f0b45f;
+    --court-line:#fff7df;
+    --danger:#d93838;
+    --success:#159447;
+    --shadow:0 10px 28px rgba(25,43,70,.09);
+    --radius:22px;
+  }
 
-    * { box-sizing: border-box; }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  body{min-height:100vh}
+  button,input,select{font:inherit}
+  button{cursor:pointer}
 
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
+  .app{
+    max-width:760px;
+    margin:0 auto;
+    min-height:100vh;
+    padding-bottom:88px;
+  }
 
-    .app {
-      width: min(100%, 460px);
-      margin: 0 auto;
-      padding: 14px 12px calc(26px + env(safe-area-inset-bottom));
-    }
+  header{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(244,247,251,.92);
+    backdrop-filter:blur(14px);
+    padding:18px 18px 10px;
+  }
 
-    h1 {
-      margin: 2px 0 2px;
-      font-size: 24px;
-      line-height: 1.1;
-    }
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+  }
 
-    .sub {
-      margin: 0 0 14px;
-      color: var(--muted);
-      font-size: 14px;
-    }
+  .brand h1{
+    font-size:22px;
+    margin:0;
+    line-height:1.1;
+  }
 
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted);
-    }
+  .brand p{
+    margin:5px 0 0;
+    font-size:13px;
+    color:var(--muted);
+  }
 
-    input, textarea, button {
-      font: inherit;
-    }
+  .clear-btn{
+    border:0;
+    background:#eaf1fb;
+    color:#315170;
+    border-radius:14px;
+    padding:10px 12px;
+    font-weight:700;
+  }
 
-    input, textarea {
-      width: 100%;
-      margin-top: 6px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--card);
-      color: var(--text);
-      font-size: 16px;
-      padding: 12px;
-      outline: none;
-    }
+  main{padding:8px 16px 24px}
+  .screen{display:none}
+  .screen.active{display:block}
 
-    input:focus, textarea:focus {
-      border-color: #9ca3af;
-      box-shadow: 0 0 0 3px rgba(17, 24, 39, .08);
-    }
+  .card{
+    background:var(--panel);
+    border:1px solid #e7edf4;
+    box-shadow:var(--shadow);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:14px;
+  }
 
-    .topbar {
-      margin-bottom: 12px;
-    }
+  .section-title{
+    display:flex;
+    align-items:end;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+  }
 
-    .attacker-tabs {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 7px;
-      margin-bottom: 12px;
-    }
+  .section-title h2{
+    font-size:18px;
+    margin:0;
+  }
 
-    .attacker-tab {
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      min-height: 48px;
-      border-radius: 13px;
-      font-weight: 800;
-      padding: 8px 6px;
-      cursor: pointer;
-    }
+  .section-title span{
+    font-size:12px;
+    color:var(--muted);
+  }
 
-    .attacker-tab.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
+  .hitter-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:14px;
+  }
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 12px;
-    }
+  .hitter-btn{
+    border:1px solid var(--line);
+    background:#f9fbfd;
+    padding:12px 8px;
+    border-radius:15px;
+    font-weight:800;
+    color:#3d4b5d;
+  }
 
-    .card-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
+  .hitter-btn.active{
+    background:var(--ink);
+    color:#fff;
+    border-color:var(--ink);
+  }
 
-    .card-head strong { font-size: 14px; }
+  .court-shell{
+    position:relative;
+    width:100%;
+    aspect-ratio: 1 / 1.22;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid #d7dfe8;
+    touch-action:none;
+    user-select:none;
+    background:#d6e4ee;
+  }
 
-    .count {
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
-    }
+  canvas{
+    width:100%;
+    height:100%;
+    display:block;
+    touch-action:none;
+  }
 
-    .court {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 3 / 4;
-      background: var(--court);
-      border: 3px solid var(--court-line);
-      border-radius: 14px;
-      overflow: hidden;
-      touch-action: manipulation;
-      user-select: none;
-    }
+  .court-label{
+    position:absolute;
+    top:10px;
+    left:10px;
+    z-index:2;
+    background:rgba(255,255,255,.9);
+    padding:7px 10px;
+    border-radius:12px;
+    font-size:12px;
+    font-weight:900;
+    pointer-events:none;
+  }
 
-    .court-line-horizontal {
-      position: absolute;
-      left: 0;
-      right: 0;
-      border-top: 3px solid var(--court-line);
-      pointer-events: none;
-    }
+  .tool-row{
+    display:flex;
+    gap:8px;
+    margin-top:12px;
+  }
 
-    .net { top: 50%; }
-    .opp-attack { top: 25%; }
-    .our-attack { top: 75%; }
+  .tool{
+    flex:1;
+    border:1px solid var(--line);
+    background:#f8fafc;
+    border-radius:14px;
+    padding:11px 8px;
+    font-weight:800;
+    color:#405066;
+  }
 
-    .net-label {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(17,24,39,.84);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 800;
-      border-radius: 999px;
-      padding: 5px 9px;
-      pointer-events: none;
-      z-index: 5;
-    }
+  .tool.active{
+    background:#e8f1ff;
+    color:#1254ad;
+    border-color:#bad5fb;
+  }
 
-    .side-label {
-      position: absolute;
-      left: 10px;
-      top: 10px;
-      font-size: 12px;
-      font-weight: 800;
-      background: rgba(255,255,255,.88);
-      border-radius: 8px;
-      padding: 5px 7px;
-      pointer-events: none;
-      z-index: 4;
-    }
+  .hint{
+    margin:10px 2px 0;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.45;
+  }
 
-    .hitter-label {
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 12px;
-      font-weight: 900;
-      color: #fff;
-      background: rgba(17,24,39,.78);
-      border-radius: 999px;
-      padding: 5px 9px;
-      z-index: 4;
-      pointer-events: none;
-    }
+  .player-add{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:10px;
+    margin-bottom:12px;
+  }
 
-    .arrow-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 3;
-    }
+  .player-add input,
+  .score-control input,
+  .score-control select{
+    width:100%;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:13px;
+    padding:12px;
+    outline:none;
+  }
 
-    .attack-arrow {
-      position: absolute;
-      width: 4px;
-      height: 32%;
-      background: var(--arrow);
-      border-radius: 999px;
-      transform-origin: bottom center;
-      bottom: 12%;
-      left: 50%;
-    }
+  .primary{
+    border:0;
+    background:var(--accent);
+    color:white;
+    border-radius:13px;
+    padding:12px 16px;
+    font-weight:900;
+  }
 
-    .attack-arrow::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: -12px;
-      width: 18px;
-      height: 18px;
-      border-left: 4px solid var(--arrow);
-      border-top: 4px solid var(--arrow);
-      transform: translateX(-50%) rotate(45deg);
-    }
+  .player-row{
+    display:grid;
+    grid-template-columns:70px 1fr auto auto;
+    align-items:center;
+    gap:10px;
+    padding:12px 0;
+    border-bottom:1px solid #edf1f5;
+  }
 
-    .attack-arrow.outside {
-      left: 22%;
-      transform: rotate(24deg);
-    }
+  .player-row:last-child{border-bottom:0}
+  .jersey{
+    display:inline-flex;
+    width:48px;
+    height:48px;
+    align-items:center;
+    justify-content:center;
+    border-radius:14px;
+    background:#eef3f9;
+    font-size:18px;
+    font-weight:900;
+  }
 
-    .attack-arrow.middle {
-      left: 50%;
-      transform: rotate(0deg);
-    }
+  .tally{
+    font-size:16px;
+    font-weight:800;
+    color:#435266;
+  }
 
-    .attack-arrow.right {
-      left: 78%;
-      transform: rotate(-24deg);
-    }
+  .stepper{
+    width:42px;
+    height:42px;
+    border:0;
+    border-radius:12px;
+    font-size:22px;
+    font-weight:800;
+  }
 
-    .attack-arrow.backrow {
-      left: 50%;
-      bottom: 2%;
-      height: 23%;
-      transform: rotate(0deg);
-    }
+  .minus{background:#f2f4f7;color:#566477}
+  .plus{background:#e6f7ed;color:#0a7b3c}
 
-    .start-dot {
-      position: absolute;
-      bottom: 10%;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--arrow);
-      transform: translateX(-50%);
-      z-index: 3;
-      pointer-events: none;
-    }
+  .score-control{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:14px;
+  }
 
-    .start-dot.outside { left: 22%; }
-    .start-dot.middle { left: 50%; }
-    .start-dot.right { left: 78%; }
-    .start-dot.backrow { left: 50%; bottom: 1%; }
+  .scoreboard{
+    display:grid;
+    gap:10px;
+  }
 
-    .mark {
-      position: absolute;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      border: 3px solid rgba(255,255,255,.96);
-      box-shadow: 0 3px 9px rgba(0,0,0,.24);
-      pointer-events: none;
-      z-index: 6;
-    }
+  .set-row{
+    display:grid;
+    grid-template-columns:64px 1fr 42px 1fr 42px;
+    align-items:center;
+    gap:8px;
+    padding:12px;
+    border:1px solid #e4eaf1;
+    border-radius:16px;
+    background:#fafcfe;
+  }
 
-    .mark.hit { background: var(--green); }
-    .mark.maybe { background: var(--yellow); }
-    .mark.avoid { background: var(--red); }
+  .set-name{font-weight:900}
+  .team-score{
+    font-size:26px;
+    font-weight:900;
+    text-align:center;
+    min-width:44px;
+  }
 
-    .mode-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 10px;
-    }
+  .score-btn{
+    width:42px;
+    height:42px;
+    border:0;
+    border-radius:12px;
+    background:#eaf1fb;
+    color:#244e7b;
+    font-size:19px;
+    font-weight:900;
+  }
 
-    .mode {
-      border: 2px solid transparent;
-      border-radius: 13px;
-      padding: 11px 6px;
-      background: #f3f4f6;
-      font-weight: 800;
-      min-height: 48px;
-      cursor: pointer;
-    }
+  .team-heads{
+    display:grid;
+    grid-template-columns:64px 1fr 42px 1fr 42px;
+    gap:8px;
+    padding:0 12px 6px;
+    color:var(--muted);
+    font-size:12px;
+    text-align:center;
+    font-weight:700;
+  }
 
-    .mode.active {
-      border-color: var(--accent);
-      background: #fff;
-    }
+  nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    z-index:30;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(255,255,255,.95);
+    border-top:1px solid #e4e9ef;
+    backdrop-filter:blur(14px);
+  }
 
-    .dot {
-      display: inline-block;
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      margin-right: 5px;
-      vertical-align: -1px;
-    }
+  .nav-inner{
+    max-width:760px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+  }
 
-    .tiny-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
+  .nav-btn{
+    border:0;
+    background:transparent;
+    border-radius:14px;
+    padding:10px 4px;
+    color:#6a7788;
+    font-size:12px;
+    font-weight:800;
+  }
 
-    .tiny-actions button {
-      min-height: 42px;
-      flex: 1;
-      padding: 9px 10px;
-      font-size: 13px;
-    }
+  .nav-btn.active{
+    color:#155ab5;
+    background:#edf4ff;
+  }
 
-    .notes { margin-top: 12px; }
+  .nav-icon{display:block;font-size:20px;margin-bottom:3px}
 
-    textarea {
-      min-height: 78px;
-      resize: vertical;
-    }
-
-    .actions {
-      display: grid;
-      grid-template-columns: 1fr 1.45fr;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    button {
-      border: 0;
-      border-radius: 14px;
-      min-height: 50px;
-      padding: 12px 14px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .secondary {
-      background: #e5e7eb;
-      color: var(--text);
-    }
-
-    .primary {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .saved {
-      margin-top: 12px;
-      font-size: 13px;
-      color: var(--muted);
-      min-height: 20px;
-    }
-
-    @media (max-width: 350px) {
-      .app { padding-left: 9px; padding-right: 9px; }
-      .attacker-tab, .mode { font-size: 12px; }
-    }
-  </style>
+  @media (min-width:700px){
+    .court-shell{aspect-ratio:1.42 / 1}
+    .hitter-grid{grid-template-columns:repeat(4,1fr)}
+  }
+</style>
 </head>
 <body>
-  <main class="app">
-    <h1>Volleyball Scout</h1>
-    <p class="sub">Choose an attacker, then tap where they should hit.</p>
-
-    <section class="topbar">
-      <label>
-        Opponent
-        <input id="opponent" type="text" value="Westview" maxlength="40" />
-      </label>
-    </section>
-
-    <div class="attacker-tabs" role="tablist" aria-label="Attacker position">
-      <button class="attacker-tab active" data-attacker="outside" type="button">Outside</button>
-      <button class="attacker-tab" data-attacker="middle" type="button">Middle</button>
-      <button class="attacker-tab" data-attacker="right" type="button">Right Side</button>
-      <button class="attacker-tab" data-attacker="backrow" type="button">Backrow Attacks</button>
-    </div>
-
-    <section class="card">
-      <div class="card-head">
-        <strong id="viewTitle">Outside hitter view</strong>
-        <span class="count" id="count">0 marks</span>
+<div class="app">
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <h1>Volleyball Tracker</h1>
       </div>
+      <button class="clear-btn" id="resetAll">Reset</button>
+    </div>
+  </header>
 
-      <div id="court" class="court" aria-label="Volleyball spray chart">
-        <div class="side-label">Opponent side</div>
-
-        <div class="court-line-horizontal opp-attack"></div>
-        <div class="court-line-horizontal net"></div>
-        <div class="court-line-horizontal our-attack"></div>
-        <div class="net-label">NET</div>
-
-        <div class="arrow-layer">
-          <div id="attackArrow" class="attack-arrow outside"></div>
-          <div id="startDot" class="start-dot outside"></div>
+  <main>
+    <section class="screen active" id="sprayScreen">
+      <div class="card">
+        <div class="section-title">
+          <h2>Attack Spray Chart</h2>
+          <span>Swipe court left/right</span>
         </div>
 
-        <div id="hitterLabel" class="hitter-label">OUTSIDE HITTER</div>
-      </div>
+        <div class="hitter-grid" id="hitterGrid">
+          <button class="hitter-btn active" data-hitter="0">OH<br><small>Outside</small></button>
+          <button class="hitter-btn" data-hitter="1">MH<br><small>Middle</small></button>
+          <button class="hitter-btn" data-hitter="2">RS<br><small>Right Side</small></button>
+          <button class="hitter-btn" data-hitter="3">BR<br><small>Back Row</small></button>
+        </div>
 
-      <div class="mode-row" role="group" aria-label="Mark type">
-        <button class="mode active" data-mode="hit" type="button">
-          <span class="dot" style="background:#22c55e"></span>Hit
-        </button>
-        <button class="mode" data-mode="maybe" type="button">
-          <span class="dot" style="background:#f59e0b"></span>Maybe
-        </button>
-        <button class="mode" data-mode="avoid" type="button">
-          <span class="dot" style="background:#ef4444"></span>Avoid
-        </button>
-      </div>
+        <div class="court-shell" id="courtShell">
+          <div class="court-label" id="courtLabel">Outside Hitter</div>
+          <canvas id="courtCanvas"></canvas>
+        </div>
 
-      <div class="tiny-actions">
-        <button id="undo" class="secondary" type="button">Undo last</button>
-        <button id="clear" class="secondary" type="button">Clear this view</button>
+        <div class="tool-row">
+          <button class="tool active" data-tool="kill">Kill Line</button>
+          <button class="tool" data-tool="draw">Free Draw</button>
+          <button class="tool" id="undoBtn">Undo</button>
+          <button class="tool" id="clearCourtBtn">Clear</button>
+        </div>
+
       </div>
     </section>
 
-    <section class="notes">
-      <label>
-        Notes for this attacker
-        <textarea id="notes" placeholder="Example: attack deep corner when blocker moves inside"></textarea>
-      </label>
+    <section class="screen" id="passingScreen">
+      <div class="card">
+        <div class="section-title">
+          <h2>Passing Tally</h2>
+          <span>Player numbers are manual</span>
+        </div>
+
+        <div class="player-add">
+          <input id="playerNumber" inputmode="numeric" placeholder="Player number" />
+          <button class="primary" id="addPlayer">Add</button>
+        </div>
+
+        <div id="playerList"></div>
+      </div>
     </section>
 
-    <section class="actions">
-      <button id="newScout" class="secondary" type="button">New scout</button>
-      <button id="saveScout" class="primary" type="button">Save scout</button>
-    </section>
+    <section class="screen" id="scoreScreen">
+      <div class="card">
+        <div class="section-title">
+          <h2>Score Box</h2>
+          <span>Maximum 25 points</span>
+        </div>
 
-    <div id="savedMessage" class="saved" aria-live="polite"></div>
+        <div class="score-control">
+          <label>
+            <small>Number of sets</small>
+            <select id="setCount">
+              <option value="1">1 set</option>
+              <option value="2">2 sets</option>
+              <option value="3" selected>3 sets</option>
+              <option value="4">4 sets</option>
+              <option value="5">5 sets</option>
+            </select>
+          </label>
+
+          <label>
+            <small>Manual score entry</small>
+            <select id="scoreEntryMode">
+              <option value="plus">+</option>
+              <option value="minus">−</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="team-heads">
+          <div></div><div>Team A</div><div></div><div>Team B</div><div></div>
+        </div>
+        <div class="scoreboard" id="scoreboard"></div>
+      </div>
+    </section>
   </main>
+</div>
 
-  <script>
-    (() => {
-      const court = document.getElementById('court');
-      const count = document.getElementById('count');
-      const opponent = document.getElementById('opponent');
-      const notes = document.getElementById('notes');
-      const savedMessage = document.getElementById('savedMessage');
-      const modeButtons = [...document.querySelectorAll('.mode')];
-      const attackerButtons = [...document.querySelectorAll('.attacker-tab')];
-      const attackArrow = document.getElementById('attackArrow');
-      const startDot = document.getElementById('startDot');
-      const hitterLabel = document.getElementById('hitterLabel');
-      const viewTitle = document.getElementById('viewTitle');
+<nav>
+  <div class="nav-inner">
+    <button class="nav-btn active" data-screen="sprayScreen">
+      <span class="nav-icon">↗/</span>Spray
+    </button>
+    <button class="nav-btn" data-screen="passingScreen">
+      <span class="nav-icon">≡</span>Passing
+    </button>
+    <button class="nav-btn" data-screen="scoreScreen">
+      <span class="nav-icon">▻</span>Score
+    </button>
+  </div>
+</nav>
 
-      const attackerNames = {
-        outside: 'Outside',
-        middle: 'Middle',
-        right: 'Right Side',
-        backrow: 'Backrow Attacks'
-      };
+<script>
+(() => {
+  const hitterNames = ["Outside Hitter", "Middle Hitter", "Right Side Hitter", "Back Row Hitter"];
+  let currentHitter = 0;
+  let activeTool = "kill";
+  const histories = [[],[],[],[]];
+  let drawing = false;
+  let currentStroke = null;
+  let swipeStartX = null;
+  let swipeStartY = null;
 
-      let activeMode = 'hit';
-      let activeAttacker = 'outside';
+  const canvas = document.getElementById("courtCanvas");
+  const ctx = canvas.getContext("2d");
+  const shell = document.getElementById("courtShell");
+  const label = document.getElementById("courtLabel");
 
-      const state = {
-        outside: { marks: [], notes: '' },
-        middle: { marks: [], notes: '' },
-        right: { marks: [], notes: '' },
-        backrow: { marks: [], notes: '' }
-      };
+  function resizeCanvas(){
+    const rect = shell.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + "px";
+    canvas.style.height = rect.height + "px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    redraw();
+  }
 
-      function setMode(mode) {
-        activeMode = mode;
-        modeButtons.forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.mode === mode);
-        });
-      }
+  function drawCourtBase(){
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
 
-      function saveCurrentNotes() {
-        state[activeAttacker].notes = notes.value;
-      }
+    ctx.clearRect(0,0,w,h);
 
-      function setAttacker(attacker) {
-        saveCurrentNotes();
-        activeAttacker = attacker;
+    ctx.fillStyle = "#dfeaf2";
+    ctx.fillRect(0,0,w,h);
 
-        attackerButtons.forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.attacker === attacker);
-        });
+    const pad = Math.min(w,h) * 0.07;
+    const courtX = pad;
+    const courtY = pad;
+    const courtW = w - pad*2;
+    const courtH = h - pad*2;
 
-        attackArrow.className = `attack-arrow ${attacker}`;
-        startDot.className = `start-dot ${attacker}`;
-        hitterLabel.textContent = `${attackerNames[attacker].toUpperCase()} HITTER`;
-        viewTitle.textContent = `${attackerNames[attacker]} hitter view`;
-        notes.value = state[attacker].notes;
+    ctx.fillStyle = "#efb35d";
+    ctx.fillRect(courtX,courtY,courtW,courtH);
 
-        savedMessage.textContent = '';
-        renderMarks();
-      }
-
-      modeButtons.forEach(btn => {
-        btn.addEventListener('click', () => setMode(btn.dataset.mode));
-      });
-
-      attackerButtons.forEach(btn => {
-        btn.addEventListener('click', () => setAttacker(btn.dataset.attacker));
-      });
-
-      function renderMarks() {
-        court.querySelectorAll('.mark').forEach(el => el.remove());
-
-        const marks = state[activeAttacker].marks;
-
-        marks.forEach(mark => {
-          const el = document.createElement('div');
-          el.className = `mark ${mark.mode}`;
-          el.style.left = `${mark.x}%`;
-          el.style.top = `${mark.y}%`;
-          court.appendChild(el);
-        });
-
-        count.textContent = `${marks.length} ${marks.length === 1 ? 'mark' : 'marks'}`;
-      }
-
-      court.addEventListener('pointerdown', (event) => {
-        const rect = court.getBoundingClientRect();
-        const x = ((event.clientX - rect.left) / rect.width) * 100;
-        const y = ((event.clientY - rect.top) / rect.height) * 100;
-
-        if (y > 49) {
-          savedMessage.textContent = 'Tap above the net on the opponent side.';
-          return;
-        }
-
-        state[activeAttacker].marks.push({
-          x: Math.max(2, Math.min(98, x)),
-          y: Math.max(2, Math.min(48, y)),
-          mode: activeMode
-        });
-
-        savedMessage.textContent = '';
-        renderMarks();
-      });
-
-      document.getElementById('undo').addEventListener('click', () => {
-        state[activeAttacker].marks.pop();
-        renderMarks();
-      });
-
-      document.getElementById('clear').addEventListener('click', () => {
-        state[activeAttacker].marks = [];
-        renderMarks();
-        savedMessage.textContent = `${attackerNames[activeAttacker]} view cleared.`;
-      });
-
-      document.getElementById('newScout').addEventListener('click', () => {
-        Object.keys(state).forEach(key => {
-          state[key].marks = [];
-          state[key].notes = '';
-        });
-
-        notes.value = '';
-        opponent.value = '';
-        setMode('hit');
-        setAttacker('outside');
-        savedMessage.textContent = 'Ready for a new scout.';
-        opponent.focus();
-      });
-
-      document.getElementById('saveScout').addEventListener('click', () => {
-        saveCurrentNotes();
-
-        const scout = {
-          opponent: opponent.value.trim() || 'Unnamed opponent',
-          attackers: {
-            outside: {
-              marks: state.outside.marks,
-              notes: state.outside.notes
-            },
-            middle: {
-              marks: state.middle.marks,
-              notes: state.middle.notes
-            },
-            right: {
-              marks: state.right.marks,
-              notes: state.right.notes
-            },
-            backrow: {
-              marks: state.backrow.marks,
-              notes: state.backrow.notes
-            }
-          },
-          savedAt: new Date().toISOString()
-        };
-
-        window.currentVolleyballScout = scout;
-
-        const totalMarks =
-          state.outside.marks.length +
-          state.middle.marks.length +
-          state.right.marks.length +
-          state.backrow.marks.length;
-
-        savedMessage.textContent =
-          `Saved ${scout.opponent}: ${totalMarks} total marks across 4 attack views.`;
-      });
-
-      renderMarks();
-    })();
-  </script>
-</body>
-</html>
+    ctx.strokeStyle = "#fff8e7";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(courtX,courtY,courtW,courtH);
